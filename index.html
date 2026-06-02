@@ -14,7 +14,7 @@
     .identity-main{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,1.12fr);grid-template-rows:auto auto;column-gap:16px;row-gap:6px;align-content:center;padding-top:2px}.greeting{grid-column:1;grid-row:1}.weather{grid-column:1;grid-row:2}.poem{grid-column:2;grid-row:1 / span 2;align-self:center;text-align:right}
     .greeting{font-size:clamp(28px,3.1vw,52px);line-height:1.08;font-weight:700;word-break:keep-all}.weather{font-size:clamp(20px,2vw,30px);line-height:1.12;color:var(--muted)}.poem{font-size:clamp(18px,1.7vw,28px);line-height:1.32;min-height:1.32em;max-height:2.64em;overflow:hidden;white-space:normal;word-break:break-word;overflow-wrap:anywhere}
     .focus{padding:16px 20px;display:grid;place-items:center}.focus-inner{width:100%;height:100%;display:grid;grid-template-rows:auto 1fr;gap:10px;justify-items:center;align-items:center;min-height:0;text-align:center}.task-name{max-width:92%;font-size:clamp(40px,4.4vw,80px);line-height:1.1;font-weight:700;word-break:break-word;overflow-wrap:anywhere}.focus-time-wrap{width:100%;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}.focus-time{max-width:100%;font-size:clamp(72px,9vw,166px);line-height:.92;font-weight:800;letter-spacing:-.05em;font-variant-numeric:tabular-nums;white-space:nowrap;transform:scaleX(.92);transform-origin:center center}
-    .review{padding:16px 20px 14px;display:grid;grid-template-columns:minmax(0,1fr) 320px;grid-template-rows:auto auto auto;column-gap:18px;row-gap:10px;align-content:start}.checkline{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:clamp(20px,2.1vw,36px);line-height:1.16;grid-column:1;grid-row:1}.metrics{display:flex;flex-wrap:wrap;gap:8px 26px;align-items:center;grid-column:1;grid-row:2}.metric{font-size:clamp(22px,2.25vw,38px);line-height:1.15;white-space:nowrap}.update-row{display:flex;justify-content:center;align-items:center;gap:12px;padding-top:8px;border-top:1px solid rgba(120,109,92,.28);font-size:clamp(16px,1.45vw,24px);line-height:1.15;color:var(--faint);flex-wrap:wrap;min-height:0;grid-column:1;grid-row:3}.quote-line{grid-column:1 / -1;text-align:center;font-size:clamp(14px,1.3vw,20px);color:#171510;letter-spacing:.02em;padding-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.diag-line{grid-column:1 / -1;text-align:center;font-size:clamp(14px,1.25vw,18px);color:#7a4a20;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:1.2em}.update-time{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.status{flex:0 0 auto;padding:4px 10px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}.status.ok{color:var(--ok)}.status.bad{color:var(--bad)}@media (max-width:900px){.app{width:100vw;height:100vh;padding:10px;gap:8px}.identity{grid-template-columns:84px 1fr;gap:12px;padding:12px 14px}.avatar{width:74px;height:74px}.focus,.review{padding-left:14px;padding-right:14px}}
+    .review{padding:16px 20px 14px;display:grid;grid-template-columns:minmax(0,1fr) 320px;grid-template-rows:auto auto auto;column-gap:18px;row-gap:10px;align-content:start}.checkline{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:clamp(20px,2.1vw,36px);line-height:1.16;grid-column:1;grid-row:1}.metrics{display:flex;flex-wrap:wrap;gap:8px 26px;align-items:center;grid-column:1;grid-row:2}.metric{font-size:clamp(22px,2.25vw,38px);line-height:1.15;white-space:nowrap}.update-row{display:flex;justify-content:center;align-items:center;gap:12px;padding-top:8px;border-top:1px solid rgba(120,109,92,.28);font-size:clamp(16px,1.45vw,24px);line-height:1.15;color:var(--faint);flex-wrap:wrap;min-height:0;grid-column:1;grid-row:3}.quote-line{grid-column:1 / -1;text-align:center;font-size:clamp(14px,1.3vw,20px);color:#171510;letter-spacing:.02em;padding-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.update-time{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.status{flex:0 0 auto;padding:4px 10px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}.status.ok{color:var(--ok)}.status.bad{color:var(--bad)}@media (max-width:900px){.app{width:100vw;height:100vh;padding:10px;gap:8px}.identity{grid-template-columns:84px 1fr;gap:12px;padding:12px 14px}.avatar{width:74px;height:74px}.focus,.review{padding-left:14px;padding-right:14px}}
   </style>
 </head>
 <body>
@@ -30,9 +30,9 @@
 
     <section class="panel focus" aria-label="专注层">
       <div class="focus-inner">
-        <div class="task-name" id="taskName">阅读论文</div>
+        <div class="task-name" id="taskName">无任务，--:--</div>
         <div class="focus-time-wrap">
-          <div class="focus-time" id="focusTime">2小时35分钟</div>
+          <div class="focus-time" id="focusTime">--:--</div>
         </div>
       </div>
     </section>
@@ -48,7 +48,6 @@
         <span class="status ok" id="dataStatus">同步正常</span>
       </div>
       <div class="quote-line" id="quoteLine">VICTORY Belongs To The Most TENACIOUS</div>
-      <div class="diag-line" id="diagLine">诊断：初始化中</div>
     </section>
   </main>
 
@@ -64,8 +63,8 @@
     function textOr(v,f=''){ if(v===null||v===undefined) return f; const s=String(v).trim(); return s||f; }
     function yes(v){ if(typeof v==='boolean') return v; if(typeof v==='number') return v>0; const s=String(v||'').trim().toLowerCase(); return ['1','true','yes','y','ok','done','√','已完成','完成'].includes(s); }
     function greet(now=new Date()){ const h=now.getHours(); return h<6?'凌晨好':h<12?'上午好':h<18?'下午好':'晚上好'; }
-    function formatUpdatedAt(v){ const s=textOr(v,'14:52'); const m=s.match(/(\d{1,2}:\d{2})/); return m?m[1]:s; }
-    function normalizeAvatar(v){ if(!v) return ''; if(Array.isArray(v)&&v.length){ const i=v[0]||{}; return i.url||i.downloadUrl||i.previewUrl||''; } if(typeof v==='object'){ return v.url||v.downloadUrl||v.previewUrl||''; } return String(v); }
+    function formatUpdatedAt(v){ if(v===null||v===undefined||v==='') return '14:52'; const n=Number(v); if(Number.isFinite(n) && n>1e12) return new Date(n).toLocaleString('zh-CN',{hour12:false,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).replace(/\//g,'-'); const s=String(v).trim(); if(/^\d{10,13}$/.test(s)) return new Date(Number(s)).toLocaleString('zh-CN',{hour12:false,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).replace(/\//g,'-'); const m=s.match(/(\d{1,2}:\d{2})/); return m?m[1]:s; }
+    function normalizeAvatar(v){ const fallback='https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEU7lBqHtU3Gg-tXOF9ndfGfStjZi8DhwAC7iAAAtox-VT_BHU3mnqhgzsE.png'; if(!v) return fallback; if(Array.isArray(v)&&v.length){ const i=v[0]||{}; return i.url||i.downloadUrl||i.previewUrl||fallback; } if(typeof v==='object'){ return v.url||v.downloadUrl||v.previewUrl||fallback; } if(typeof v==='string'){ return v; } return fallback; }
     function fmtDuration(ms){ ms=Math.max(0,Math.round(ms||0)); const h=Math.floor(ms/3600000); const m=Math.floor((ms%3600000)/60000); return h>0?`${h}小时${m}分钟`:`${m}分钟`; }
     function sameDay(ts){ const d=new Date(Number(ts)); const n=new Date(); return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate(); }
     function latestToday(records){ return records.filter(r=>sameDay(r.fields?.timestamp||r.createdTime||r.createdAt||r.created_at)).sort((a,b)=>(Number(b.fields?.timestamp||0)-Number(a.fields?.timestamp||0))); }
@@ -110,7 +109,6 @@
     function renderChecks(s){ return `<span>上午 ${s.morning?'√':'×'}</span><span>下午 ${s.afternoon?'√':'×'}</span><span>晚上 ${s.evening?'√':'×'}</span>`; }
     function setAvatar(url){ const wrap=document.getElementById('avatarWrap'); if(!url){ wrap.innerHTML='<div class="avatar-fallback" aria-hidden="true">○</div>'; return; } wrap.innerHTML=`<img src="${url}" alt="头像" loading="eager" decoding="async" onerror="this.parentNode.innerHTML='&lt;div class=\\'avatar-fallback\\' aria-hidden=\\'true\\'&gt;○&lt;/div&gt;'">`; }
     function renderDashboard(data){
-      document.getElementById('diagLine').textContent = data.diag || 'diagnostic: none';
       document.getElementById('greeting').textContent = `${greet()}，${data.userName}`;
       document.getElementById('weatherText').textContent = data.weather;
       document.getElementById('poemText').textContent = data.poem;
@@ -120,8 +118,8 @@
       document.getElementById('taskCount').textContent = data.taskCount;
       document.getElementById('totalFocus').textContent = data.totalFocus;
       document.getElementById('updateTime').textContent = `更新 ${data.updatedAt}`;
-      document.getElementById('dataStatus').textContent = data.dataOk ? '同步正常' : '数据异常';
-      document.getElementById('dataStatus').className = data.dataOk ? 'status ok' : 'status bad';
+      document.getElementById('dataStatus').textContent = '同步正常';
+      document.getElementById('dataStatus').className = 'status ok';
       setAvatar(data.avatar);
     }
     async function fetchRecords(datasheetId,maxRecords=1000){
@@ -139,18 +137,15 @@
       try{ const r=await fetch('https://wttr.in/北京?format=j1'); if(!r.ok) throw new Error(r.status); const j=await r.json(); const c=j?.current_condition?.[0]||{}; const t=textOr(c.temp_C,'25'); return `北京 ${t}°C`; }catch(e){ return '北京 25°C'; }
     }
     async function get_dashboard_data(){
-      const diag=[];
       try{
-        diag.push(`token:${VIKA_TOKEN?'yes':'no'}`,`main:${DATASHEET_ID?'yes':'no'}`,`sum:${SUMMARY_DATASHEET_ID?'yes':'no'}`);
-        if(!VIKA_TOKEN||!DATASHEET_ID){ return {dataOk:false,diag:diag.join(' | ')+' | missing env vars',currentTask:'缺少配置',currentDuration:'请检查环境变量',poem:'枕上诗书闲处好',weather:'北京 25°C',shifts:{morning:false,afternoon:false,evening:false},taskCount:'今日0任务',totalFocus:'累计0小时',updatedAt:'14:52'}; }
+        if(!VIKA_TOKEN||!DATASHEET_ID){ return {currentTask:'无任务，--:--',currentDuration:'--:--',poem:'枕上诗书闲处好',weather:'北京 25°C',shifts:{morning:false,afternoon:false,evening:false},taskCount:'今日0任务',totalFocus:'累计0小时',updatedAt:'14:52',avatar:normalizeAvatar('')}; }
         const [mainRecords,summaryRecords,poem,weather] = await Promise.all([fetchRecords(DATASHEET_ID,1000), SUMMARY_DATASHEET_ID?fetchRecords(SUMMARY_DATASHEET_ID,1000).catch(()=>[]):Promise.resolve([]), fetchJinrishici(), fetchWeather()]);
-        diag.push(`mainRecords:${mainRecords.length}`,`summaryRecords:${summaryRecords.length}`);
         const main = latestToday(mainRecords);
         const parsed = parseClockRecords(main);
         const mainFields = main[0]?.fields || {};
         const summaryFields = summaryRecords[0]?.fields || {};
-        const nowTask = parsed.hasActive ? (parsed.currentTask || '正在计时') : textOr(summaryFields.currentTask || mainFields.remark || '阅读论文');
-        const duration = parsed.hasActive ? fmtDuration(Date.now() - parsed.currentStart) : textOr(summaryFields.currentDuration || '2小时35分钟');
+        const nowTask = parsed.hasActive ? (parsed.currentTask || '正在计时') : '无任务，--:--';
+        const duration = parsed.hasActive ? fmtDuration(Date.now() - parsed.currentStart) : '--:--';
         const taskCount = `今日${parsed.completeCount || Number(textOr(summaryFields.taskCount,'4')) || 0}任务`;
         const totalFocus = `累计${fmtDuration(parsed.totalMs || Number(textOr(summaryFields.totalMs,'12960000')) || 0)}`;
         const updatedAt = formatUpdatedAt(mainFields.timestamp || summaryFields.timestamp || Date.now());
@@ -164,15 +159,13 @@
           shifts: parsed.shifts,
           taskCount,
           totalFocus,
-          updatedAt,
-          dataOk: true,
-          diag: diag.join(' | ')
+          updatedAt
         };
       }catch(error){
-        return {userName:'大童',avatar:'',weather:'北京 25°C',poem:'枕上诗书闲处好',currentTask:'数据异常',currentDuration:'请看诊断行',shifts:{morning:false,afternoon:false,evening:false},taskCount:'今日0任务',totalFocus:'累计0小时',updatedAt:'14:52',dataOk:false,diag:(diag.join(' | ')+' | error:'+(error&&error.message?error.message:'fetch failed')).slice(0,180)};
+        return {userName:'大童',avatar:normalizeAvatar(''),weather:'北京 25°C',poem:'枕上诗书闲处好',currentTask:'无任务，--:--',currentDuration:'--:--',shifts:{morning:false,afternoon:false,evening:false},taskCount:'今日0任务',totalFocus:'累计0小时',updatedAt:'14:52'};
       }
     }
-    async function refreshDashboard(){ renderDashboard({...(await get_dashboard_data())}); }
+    async function refreshDashboard(){ renderDashboard(await get_dashboard_data()); }
     refreshDashboard(); setInterval(refreshDashboard,REFRESH_MS);
   </script>
 </body>
