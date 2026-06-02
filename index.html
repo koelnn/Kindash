@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -104,23 +105,8 @@
     }
 
     .greeting { grid-column: 1; grid-row: 1; }
-
     .weather { grid-column: 1; grid-row: 2; }
-
-    .poem {
-      grid-column: 2;
-      grid-row: 1 / span 2;
-      align-self: center;
-      text-align: right;
-      font-size: clamp(18px, 1.7vw, 28px);
-      line-height: 1.32;
-      min-height: 1.32em;
-      max-height: 2.64em;
-      overflow: hidden;
-      white-space: normal;
-      word-break: break-word;
-      overflow-wrap: anywhere;
-    }
+    .poem { grid-column: 2; grid-row: 1 / span 2; align-self: center; text-align: right; }
 
     .greeting {
       font-size: clamp(28px, 3.1vw, 52px);
@@ -133,6 +119,17 @@
       font-size: clamp(20px, 2vw, 30px);
       line-height: 1.12;
       color: var(--muted);
+    }
+
+    .poem {
+      font-size: clamp(18px, 1.7vw, 28px);
+      line-height: 1.32;
+      min-height: 1.32em;
+      max-height: 2.64em;
+      overflow: hidden;
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: anywhere;
     }
 
     .focus {
@@ -199,8 +196,6 @@
       gap: 8px 22px;
       font-size: clamp(20px, 2.1vw, 36px);
       line-height: 1.16;
-      grid-column: 1;
-      grid-row: 1;
     }
 
     .metrics {
@@ -208,8 +203,6 @@
       flex-wrap: wrap;
       gap: 8px 26px;
       align-items: center;
-      grid-column: 1;
-      grid-row: 2;
     }
 
     .metric {
@@ -244,6 +237,24 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    .diag-line {
+      grid-column: 1 / -1;
+      text-align: center;
+      font-size: clamp(14px, 1.25vw, 18px);
+      color: #7a4a20;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-height: 1.2em;
+    }
+
+    .update-time {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .status {
@@ -316,6 +327,7 @@
         <span class="status ok" id="dataStatus">同步正常</span>
       </div>
       <div class="quote-line" id="quoteLine">VICTORY Belongs To The Most TENACIOUS</div>
+      <div class="diag-line" id="diagLine">诊断：等待加载</div>
     </section>
   </main>
 
@@ -408,7 +420,7 @@
         wrap.innerHTML = '<div class="avatar-fallback" aria-hidden="true">○</div>';
         return;
       }
-      wrap.innerHTML = `<img src="${url}" alt="头像" loading="eager" decoding="async" onerror="this.parentNode.innerHTML='&lt;div class=\\\\'avatar-fallback\\\\' aria-hidden=\\\\'true\\\\'&gt;○&lt;/div&gt;'">`;
+      wrap.innerHTML = `<img src="${url}" alt="头像" loading="eager" decoding="async" onerror="this.parentNode.innerHTML='&lt;div class=\\'avatar-fallback\\' aria-hidden=\\'true\\'&gt;○&lt;/div&gt;'">`;
     }
 
     function renderDashboard(data) {
@@ -423,6 +435,7 @@
       document.getElementById('updateTime').textContent = `更新 ${data.updatedAt}`;
       document.getElementById('dataStatus').textContent = data.dataOk ? '同步正常' : '数据异常';
       document.getElementById('dataStatus').className = data.dataOk ? 'status ok' : 'status bad';
+
       setAvatar(data.avatar);
     }
 
@@ -449,25 +462,42 @@
     }
 
     async function get_dashboard_data() {
+      const diag = [];
       try {
-        if (typeof window.getDashboardData === 'function') return await window.getDashboardData();
-        if (typeof window.get_dashboard_data_impl === 'function') return await window.get_dashboard_data_impl();
+        if (typeof window.getDashboardData === 'function') {
+          diag.push('using window.getDashboardData');
+          const d = await window.getDashboardData();
+          return { ...d, diag: diag.join(' | '), dataOk: true };
+        }
+        if (typeof window.get_dashboard_data_impl === 'function') {
+          diag.push('using window.get_dashboard_data_impl');
+          const d = await window.get_dashboard_data_impl();
+          return { ...d, diag: diag.join(' | '), dataOk: true };
+        }
+
+        diag.push(`token:${VIKA_TOKEN ? 'yes' : 'no'}`, `main:${DATASHEET_ID ? 'yes' : 'no'}`, `sum:${SUMMARY_DATASHEET_ID ? 'yes' : 'no'}`);
+        if (!VIKA_TOKEN || !DATASHEET_ID) {
+          return {
+            dataOk: false,
+            diag: diag.join(' | ') + ' | missing env vars'
+          };
+        }
 
         const [mainRecords, summaryRecords] = await Promise.all([
           fetchRecords(DATASHEET_ID, 1),
-          fetchRecords(SUMMARY_DATASHEET_ID, 1).catch(() => [])
+          SUMMARY_DATASHEET_ID ? fetchRecords(SUMMARY_DATASHEET_ID, 1).catch(() => []) : Promise.resolve([])
         ]);
 
+        diag.push(`mainRecords:${mainRecords.length}`, `summaryRecords:${summaryRecords.length}`);
         const mainFields = mainRecords[0]?.fields || {};
         const summaryFields = summaryRecords[0]?.fields || {};
-
-        return {
+        const result = {
           userName: pickField(mainFields, ['姓名', '昵称', 'name', 'userName']),
           avatar: pickField(mainFields, ['头像', 'avatar', 'avatarUrl']),
           weatherSimple: pickField(mainFields, ['天气简报', '天气', 'weatherSimple', 'weather']) || '北京 25°C',
-          poem: pickField(mainFields, ['诗词', '今日诗词', '诗句', 'poem', 'quote']),
-          currentTask: pickField(mainFields, ['当前任务', '任务', 'currentTask', 'taskName']),
-          currentDuration: pickField(mainFields, ['专注时长', '时长', 'currentDuration', 'focusTime']),
+          poem: pickField(mainFields, ['诗词', '今日诗词', '诗句', 'poem', 'quote']) || '',
+          currentTask: pickField(mainFields, ['当前任务', '任务', 'currentTask', 'taskName']) || '',
+          currentDuration: pickField(mainFields, ['专注时长', '时长', 'currentDuration', 'focusTime']) || '',
           morningDone: pickField(mainFields, ['上午打卡', '上午', 'morningDone']),
           afternoonDone: pickField(mainFields, ['下午打卡', '下午', 'afternoonDone']),
           eveningDone: pickField(mainFields, ['晚上打卡', '晚上', 'eveningDone']),
@@ -475,8 +505,11 @@
           totalFocusText: pickField(mainFields, ['累计时长', '总时长', 'totalFocusText', 'totalFocus']),
           summary: pickField(summaryFields, ['总结', '今日总结', 'summary']) || pickField(mainFields, ['总结', '今日总结', 'summary']),
           updatedAt: pickField(mainFields, ['更新时间', 'updatedAt', 'updateTime']),
-          dataOk: true
+          dataOk: true,
+          diag: diag.join(' | ')
         };
+        if (!result.poem || !result.currentTask || !result.currentDuration) result.dataOk = false;
+        return result;
       } catch (error) {
         return {
           userName: '大童',
@@ -491,7 +524,8 @@
           totalFocusText: '累计3.6小时',
           summary: '完成两篇论文阅读',
           updatedAt: '14:52',
-          dataOk: false
+          dataOk: false,
+          diag: (diag.join(' | ') + ' | error:' + (error && error.message ? error.message : 'fetch failed')).slice(0, 180)
         };
       }
     }
