@@ -478,7 +478,7 @@
           return { ...d, diag: diag.join(' | '), dataOk: true };
         }
 
-        diag.push(`token:${VIKA_TOKEN ? 'yes' : 'no'}`, `main:${DATASHEET_ID ? 'yes' : 'no'}`, `sum:${SUMMARY_DATASHEET_ID ? 'yes' : 'no'}`, `access:${ACCESS_KEY ? 'yes' : 'no'}`);
+        diag.push(`token:${VIKA_TOKEN ? 'yes' : 'no'}`, `main:${DATASHEET_ID ? 'yes' : 'no'}`, `sum:${SUMMARY_DATASHEET_ID ? 'yes' : 'no'}`);
         if (!VIKA_TOKEN || !DATASHEET_ID) {
           return {
             dataOk: false,
