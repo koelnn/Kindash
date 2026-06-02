@@ -2,9 +2,5 @@ services:
   - type: web
     name: kindle-dashboard
     env: static
-    buildCommand: ""
+    buildCommand: ''
     staticPublishPath: .
-    headers:
-      - path: /*
-        name: Cache-Control
-        value: no-cache
