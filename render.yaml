@@ -1,6 +1,13 @@
 services:
   - type: web
     name: kindle-dashboard
-    env: static
-    buildCommand: ''
-    staticPublishPath: .
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: VIKA_TOKEN
+        sync: false
+      - key: DATASHEET_ID
+        sync: false
+      - key: SUMMARY_DATASHEET_ID
+        sync: false
