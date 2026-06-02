@@ -101,7 +101,7 @@ function parseClockRecords(records) {
   return { shifts, completeCount, totalMs, currentTask, currentStart, hasActive: active.length > 0 };
 }
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
 
 app.get('/api/data', async (req, res) => {
   try {
