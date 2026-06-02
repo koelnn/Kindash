@@ -1,0 +1,6 @@
+window._env_ = window._env_ || {
+  VIKA_TOKEN: 'REPLACE_ME',
+  DATASHEET_ID: 'REPLACE_ME',
+  SUMMARY_DATASHEET_ID: 'REPLACE_ME',
+  ACCESS_KEY: 'REPLACE_ME'
+};
