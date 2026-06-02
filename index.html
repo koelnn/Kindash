@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Kindle Personal Dashboard</title>
+  <style>
+    :root {
+      --bg: #f4efe5;
+      --ink: #171510;
+      --muted: #6a6459;
+      --faint: #928b79;
+      --line: #cfc4b1;
+      --ok: #395b35;
+      --bad: #8a2929;
+      --panel-bg: rgba(255,255,255,0.24);
+      --frame-w: 1264px;
+      --frame-h: 1680px;
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app {
+      width: min(100vw, var(--frame-w));
+      height: min(100vh, var(--frame-h));
+      padding: 18px;
+      display: grid;
+      grid-template-rows: 0.22fr 0.45fr 0.33fr;
+      gap: 12px;
+      background: linear-gradient(180deg, #f8f4eb 0%, #f3ede1 100%);
+      overflow: hidden;
+    }
+
+    .panel {
+      min-height: 0;
+      min-width: 0;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-bg);
+      overflow: hidden;
+    }
+
+    .identity {
+      display: grid;
+      grid-template-columns: 118px 1fr;
+      gap: 18px;
+      padding: 16px 20px;
+      align-items: start;
+    }
+
+    .avatar {
+      width: 104px;
+      height: 104px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid #a79a84;
+      background: #ece4d6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      align-self: center;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .avatar-fallback {
+      font-size: 48px;
+      color: var(--muted);
+      line-height: 1;
+    }
+
+    .identity-main {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(220px, 1.12fr);
+      grid-template-rows: auto auto;
+      column-gap: 16px;
+      row-gap: 6px;
+      align-content: center;
+      padding-top: 2px;
+    }
+
+    .greeting { grid-column: 1; grid-row: 1; }
+
+    .weather { grid-column: 1; grid-row: 2; }
+
+    .poem {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      align-self: center;
+      text-align: right;
+      font-size: clamp(18px, 1.7vw, 28px);
+      line-height: 1.32;
+      min-height: 1.32em;
+      max-height: 2.64em;
+      overflow: hidden;
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .greeting {
+      font-size: clamp(28px, 3.1vw, 52px);
+      line-height: 1.08;
+      font-weight: 700;
+      word-break: keep-all;
+    }
+
+    .weather {
+      font-size: clamp(20px, 2vw, 30px);
+      line-height: 1.12;
+      color: var(--muted);
+    }
+
+    .focus {
+      padding: 16px 20px;
+      display: grid;
+      place-items: center;
+    }
+
+    .focus-inner {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 10px;
+      justify-items: center;
+      align-items: center;
+      min-height: 0;
+      text-align: center;
+    }
+
+    .task-name {
+      max-width: 92%;
+      font-size: clamp(40px, 4.4vw, 80px);
+      line-height: 1.1;
+      font-weight: 700;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .focus-time-wrap {
+      width: 100%;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .focus-time {
+      max-width: 100%;
+      font-size: clamp(72px, 9vw, 166px);
+      line-height: 0.92;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      transform: scaleX(0.92);
+      transform-origin: center center;
+    }
+
+    .review {
+      padding: 16px 20px 14px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      grid-template-rows: auto auto auto;
+      column-gap: 18px;
+      row-gap: 10px;
+      align-content: start;
+    }
+
+    .checkline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 22px;
+      font-size: clamp(20px, 2.1vw, 36px);
+      line-height: 1.16;
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .metrics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 26px;
+      align-items: center;
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .metric {
+      font-size: clamp(22px, 2.25vw, 38px);
+      line-height: 1.15;
+      white-space: nowrap;
+    }
+
+    .update-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(120, 109, 92, 0.28);
+      font-size: clamp(16px, 1.45vw, 24px);
+      line-height: 1.15;
+      color: var(--faint);
+      flex-wrap: wrap;
+      min-height: 0;
+      grid-column: 1;
+      grid-row: 3;
+    }
+
+    .quote-line {
+      grid-column: 1 / -1;
+      text-align: center;
+      font-size: clamp(14px, 1.3vw, 20px);
+      color: rgba(25,23,19,0.35);
+      letter-spacing: 0.02em;
+      padding-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .status {
+      flex: 0 0 auto;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      white-space: nowrap;
+    }
+
+    .status.ok { color: var(--ok); }
+    .status.bad { color: var(--bad); }
+
+    @media (max-width: 900px) {
+      .app {
+        width: 100vw;
+        height: 100vh;
+        padding: 10px;
+        gap: 8px;
+      }
+      .identity {
+        grid-template-columns: 84px 1fr;
+        gap: 12px;
+        padding: 12px 14px;
+      }
+      .avatar {
+        width: 74px;
+        height: 74px;
+      }
+      .focus,
+      .review {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" aria-label="Kindle Personal Dashboard">
+    <section class="panel identity" aria-label="身份层">
+      <div class="avatar" id="avatarWrap"><div class="avatar-fallback" aria-hidden="true">○</div></div>
+      <div class="identity-main">
+        <div class="greeting" id="greeting">下午好，大童</div>
+        <div class="weather" id="weatherText">北京 25°C</div>
+        <div class="poem" id="poemText">枕上诗书闲处好</div>
+      </div>
+    </section>
+
+    <section class="panel focus" aria-label="专注层">
+      <div class="focus-inner">
+        <div class="task-name" id="taskName">阅读论文</div>
+        <div class="focus-time-wrap">
+          <div class="focus-time" id="focusTime">2小时35分钟</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel review" aria-label="复盘层">
+      <div class="checkline" id="checkline">
+        <span>上午 √</span>
+        <span>下午 √</span>
+        <span>晚上 ×</span>
+      </div>
+      <div class="metrics">
+        <div class="metric" id="taskCount">今日4任务</div>
+        <div class="metric" id="totalFocus">累计3.6小时</div>
+      </div>
+      <div class="update-row">
+        <span class="update-time" id="updateTime">更新 14:52</span>
+        <span class="status ok" id="dataStatus">同步正常</span>
+      </div>
+      <div class="quote-line" id="quoteLine">VICTORY Belongs To The Most TENACIOUS</div>
+    </section>
+  </main>
+
+  <script>
+    const REFRESH_MS = 90 * 1000;
+    const ENV = window.ENV || {};
+    const VIKA_TOKEN = ENV.VIKA_TOKEN || window.VIKA_TOKEN || '';
+    const DATASHEET_ID = ENV.DATASHEET_ID || window.DATASHEET_ID || '';
+    const SUMMARY_DATASHEET_ID = ENV.SUMMARY_DATASHEET_ID || window.SUMMARY_DATASHEET_ID || '';
+    const ACCESS_KEY = ENV.ACCESS_KEY || window.ACCESS_KEY || '';
+    const VIKA_BASE = 'https://api.vika.cn/fusion/v1/datasheets';
+
+    function textOr(value, fallback = '') {
+      if (value === null || value === undefined) return fallback;
+      const str = String(value).trim();
+      return str || fallback;
+    }
+
+    function yes(value) {
+      if (typeof value === 'boolean') return value;
+      if (typeof value === 'number') return value > 0;
+      const str = String(value || '').trim().toLowerCase();
+      return ['1','true','yes','y','ok','done','√','已完成','完成'].includes(str);
+    }
+
+    function greet(now = new Date()) {
+      const h = now.getHours();
+      if (h < 6) return '凌晨好';
+      if (h < 12) return '上午好';
+      if (h < 18) return '下午好';
+      return '晚上好';
+    }
+
+    function formatTaskCount(value) {
+      if (value === null || value === undefined || value === '') return '今日4任务';
+      if (typeof value === 'number') return `今日${value}任务`;
+      const str = String(value).trim();
+      return str.startsWith('今日') ? str : `今日${str}任务`;
+    }
+
+    function formatUpdatedAt(value) {
+      const str = textOr(value, '14:52');
+      const match = str.match(/(\d{1,2}:\d{2})/);
+      return match ? match[1] : str;
+    }
+
+    function normalizeAvatar(value) {
+      if (!value) return '';
+      if (Array.isArray(value) && value.length) {
+        const item = value[0] || {};
+        return item.url || item.downloadUrl || item.previewUrl || '';
+      }
+      if (typeof value === 'object') {
+        return value.url || value.downloadUrl || value.previewUrl || '';
+      }
+      return String(value);
+    }
+
+    function normalizeDashboardData(raw) {
+      const data = raw && typeof raw === 'object' ? raw : {};
+      return {
+        userName: textOr(data.userName || data.name, '大童'),
+        avatar: normalizeAvatar(data.avatar || data.avatarUrl),
+        weather: textOr(data.weatherSimple || data.weather, '北京 25°C'),
+        poem: textOr(data.poem || data.quote, '枕上诗书闲处好'),
+        currentTask: textOr(data.currentTask || data.taskName, '阅读论文'),
+        currentDuration: textOr(data.currentDuration || data.focusTime, '2小时35分钟'),
+        morningDone: yes(data.morningDone ?? true),
+        afternoonDone: yes(data.afternoonDone ?? true),
+        eveningDone: yes(data.eveningDone ?? false),
+        taskCount: formatTaskCount(data.taskCountText ?? data.taskCount),
+        totalFocus: textOr(data.totalFocusText || data.totalFocus, '累计3.6小时'),
+        summary: textOr(data.summary, '完成两篇论文阅读'),
+        updatedAt: formatUpdatedAt(data.updatedAt || data.updateTime),
+        dataOk: data.dataOk !== false
+      };
+    }
+
+    function renderChecks(data) {
+      return [
+        ['上午', data.morningDone],
+        ['下午', data.afternoonDone],
+        ['晚上', data.eveningDone]
+      ].map(([label, ok]) => `<span>${label} ${ok ? '√' : '×'}</span>`).join('');
+    }
+
+    function setAvatar(url) {
+      const wrap = document.getElementById('avatarWrap');
+      if (!url) {
+        wrap.innerHTML = '<div class="avatar-fallback" aria-hidden="true">○</div>';
+        return;
+      }
+      wrap.innerHTML = `<img src="${url}" alt="头像" loading="eager" decoding="async" onerror="this.parentNode.innerHTML='&lt;div class=\\\\'avatar-fallback\\\\' aria-hidden=\\\\'true\\\\'&gt;○&lt;/div&gt;'">`;
+    }
+
+    function renderDashboard(data) {
+      document.getElementById('greeting').textContent = `${greet()}，${data.userName}`;
+      document.getElementById('weatherText').textContent = data.weather;
+      document.getElementById('poemText').textContent = data.poem;
+      document.getElementById('taskName').textContent = data.currentTask;
+      document.getElementById('focusTime').textContent = data.currentDuration;
+      document.getElementById('checkline').innerHTML = renderChecks(data);
+      document.getElementById('taskCount').textContent = data.taskCount;
+      document.getElementById('totalFocus').textContent = data.totalFocus;
+      document.getElementById('updateTime').textContent = `更新 ${data.updatedAt}`;
+      document.getElementById('dataStatus').textContent = data.dataOk ? '同步正常' : '数据异常';
+      document.getElementById('dataStatus').className = data.dataOk ? 'status ok' : 'status bad';
+      setAvatar(data.avatar);
+    }
+
+    async function fetchRecords(datasheetId, maxRecords = 1) {
+      if (!VIKA_TOKEN || !datasheetId) return [];
+      const params = new URLSearchParams({ pageSize: String(maxRecords) });
+      const response = await fetch(`${VIKA_BASE}/${encodeURIComponent(datasheetId)}/records?${params.toString()}`, {
+        headers: {
+          Authorization: `Bearer ${VIKA_TOKEN}`,
+          'Content-Type': 'application/json',
+          ...(ACCESS_KEY ? { 'X-Access-Key': ACCESS_KEY } : {})
+        }
+      });
+      if (!response.ok) throw new Error(`Vika request failed: ${response.status}`);
+      const json = await response.json();
+      return json?.data?.records || [];
+    }
+
+    function pickField(fields, names) {
+      for (const name of names) {
+        if (fields[name] !== undefined && fields[name] !== null && fields[name] !== '') return fields[name];
+      }
+      return undefined;
+    }
+
+    async function get_dashboard_data() {
+      try {
+        if (typeof window.getDashboardData === 'function') return await window.getDashboardData();
+        if (typeof window.get_dashboard_data_impl === 'function') return await window.get_dashboard_data_impl();
+
+        const [mainRecords, summaryRecords] = await Promise.all([
+          fetchRecords(DATASHEET_ID, 1),
+          fetchRecords(SUMMARY_DATASHEET_ID, 1).catch(() => [])
+        ]);
+
+        const mainFields = mainRecords[0]?.fields || {};
+        const summaryFields = summaryRecords[0]?.fields || {};
+
+        return {
+          userName: pickField(mainFields, ['姓名', '昵称', 'name', 'userName']),
+          avatar: pickField(mainFields, ['头像', 'avatar', 'avatarUrl']),
+          weatherSimple: pickField(mainFields, ['天气简报', '天气', 'weatherSimple', 'weather']) || '北京 25°C',
+          poem: pickField(mainFields, ['诗词', '今日诗词', '诗句', 'poem', 'quote']),
+          currentTask: pickField(mainFields, ['当前任务', '任务', 'currentTask', 'taskName']),
+          currentDuration: pickField(mainFields, ['专注时长', '时长', 'currentDuration', 'focusTime']),
+          morningDone: pickField(mainFields, ['上午打卡', '上午', 'morningDone']),
+          afternoonDone: pickField(mainFields, ['下午打卡', '下午', 'afternoonDone']),
+          eveningDone: pickField(mainFields, ['晚上打卡', '晚上', 'eveningDone']),
+          taskCount: pickField(mainFields, ['今日任务', '任务数', 'taskCount']),
+          totalFocusText: pickField(mainFields, ['累计时长', '总时长', 'totalFocusText', 'totalFocus']),
+          summary: pickField(summaryFields, ['总结', '今日总结', 'summary']) || pickField(mainFields, ['总结', '今日总结', 'summary']),
+          updatedAt: pickField(mainFields, ['更新时间', 'updatedAt', 'updateTime']),
+          dataOk: true
+        };
+      } catch (error) {
+        return {
+          userName: '大童',
+          weatherSimple: '北京 25°C',
+          poem: '枕上诗书闲处好',
+          currentTask: '阅读论文',
+          currentDuration: '2小时35分钟',
+          morningDone: true,
+          afternoonDone: true,
+          eveningDone: false,
+          taskCount: 4,
+          totalFocusText: '累计3.6小时',
+          summary: '完成两篇论文阅读',
+          updatedAt: '14:52',
+          dataOk: false
+        };
+      }
+    }
+
+    async function refreshDashboard() {
+      const raw = await get_dashboard_data();
+      renderDashboard(normalizeDashboardData(raw));
+    }
+
+    refreshDashboard();
+    setInterval(refreshDashboard, REFRESH_MS);
+  </script>
+</body>
+</html>
