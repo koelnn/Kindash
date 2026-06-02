@@ -341,7 +341,6 @@
     const VIKA_TOKEN = ENV.VIKA_TOKEN || window.VIKA_TOKEN || '';
     const DATASHEET_ID = ENV.DATASHEET_ID || window.DATASHEET_ID || '';
     const SUMMARY_DATASHEET_ID = ENV.SUMMARY_DATASHEET_ID || window.SUMMARY_DATASHEET_ID || '';
-    const ACCESS_KEY = ENV.ACCESS_KEY || window.ACCESS_KEY || '';
     const VIKA_BASE = 'https://api.vika.cn/fusion/v1/datasheets';
 
     function textOr(value, fallback = '') {
@@ -451,7 +450,6 @@
         headers: {
           Authorization: `Bearer ${VIKA_TOKEN}`,
           'Content-Type': 'application/json',
-          ...(ACCESS_KEY ? { 'X-Access-Key': ACCESS_KEY } : {})
         }
       });
       if (!response.ok) throw new Error(`Vika request failed: ${response.status}`);
