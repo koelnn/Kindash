@@ -19,21 +19,21 @@
       -webkit-font-smoothing:antialiased;
       text-rendering:optimizeLegibility
     }
-    body{display:flex;align-items:stretch;justify-content:center}
+    body{display:flex;align-items:stretch;justify-content:center;min-height:100vh;width:100vw}
     .app{
-      width:min(100vw,var(--frame-w));
+      width:100vw;
       min-height:100vh;
       height:100vh;
       padding:18px;
       display:grid;
-      grid-template-rows:.22fr .45fr .33fr;
+      grid-template-rows:1fr 2fr 1.2fr;
       gap:12px;
       background:linear-gradient(180deg,#f8f4eb 0%,#f3ede1 100%);
       overflow:hidden;
       align-content:stretch
     }
     .panel{min-height:0;min-width:0;border:2px solid var(--line);border-radius:var(--radius);background:var(--panel-bg);overflow:hidden}
-    .identity{display:grid;grid-template-columns:118px minmax(0,1fr);gap:18px;padding:16px 20px;align-items:center}
+    .identity{display:grid;grid-template-columns:118px minmax(0,1fr);gap:18px;padding:16px 20px;align-items:center;min-height:0}
     .avatar{width:104px;height:104px;border-radius:50%;overflow:hidden;border:2px solid #a79a84;background:#ece4d6;display:flex;align-items:center;justify-content:center;align-self:center}
     .avatar img{width:100%;height:100%;object-fit:cover;display:block}
     .avatar-fallback{font-size:48px;color:var(--muted);line-height:1}
@@ -54,12 +54,12 @@
     .greeting{font-size:clamp(28px,3.1vw,52px);line-height:1.08;font-weight:700;word-break:keep-all}
     .weather{font-size:clamp(20px,2vw,30px);line-height:1.12;color:var(--muted)}
     .poem{font-size:clamp(18px,1.7vw,28px);line-height:1.32;min-height:1.32em;max-height:2.64em;overflow:hidden;white-space:normal;word-break:break-word;overflow-wrap:anywhere}
-    .focus{padding:16px 20px;display:grid;place-items:center;min-height:0}
+    .focus{padding:16px 20px;display:grid;place-items:center;min-height:0;align-content:center}
     .focus-inner{width:100%;height:100%;display:grid;grid-template-rows:auto 1fr;gap:10px;justify-items:center;align-items:center;min-height:0;text-align:center}
     .task-name{max-width:92%;font-size:clamp(40px,4.4vw,80px);line-height:1.1;font-weight:700;word-break:break-word;overflow-wrap:anywhere}
     .focus-time-wrap{width:100%;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
     .focus-time{max-width:100%;font-size:clamp(72px,9vw,166px);line-height:.92;font-weight:800;letter-spacing:-.05em;font-variant-numeric:tabular-nums;white-space:nowrap;transform:scaleX(.92);transform-origin:center center}
-    .review{padding:16px 20px 14px;display:grid;grid-template-columns:minmax(0,1fr) 320px;grid-template-rows:auto auto auto;column-gap:18px;row-gap:10px;align-content:start;min-height:0}
+    .review{padding:16px 20px 14px;display:grid;grid-template-columns:minmax(0,1fr) 320px;grid-template-rows:auto auto auto;column-gap:18px;row-gap:10px;align-content:center;min-height:0}
     .checkline{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:clamp(20px,2.1vw,36px);line-height:1.16;grid-column:1;grid-row:1}
     .metrics{display:flex;flex-wrap:wrap;gap:8px 26px;align-items:center;grid-column:1;grid-row:2}
     .metric{font-size:clamp(22px,2.25vw,38px);line-height:1.15;white-space:nowrap}
@@ -91,7 +91,7 @@
 
     <section class="panel focus" aria-label="专注层">
       <div class="focus-inner">
-        <div class="task-name" id="taskName">无任务，--:--</div>
+        <div class="task-name" id="taskName">无任务</div>
         <div class="focus-time-wrap">
           <div class="focus-time" id="focusTime">--:--</div>
         </div>
@@ -122,7 +122,6 @@
     const VIKA_BASE = 'https://api.vika.cn/fusion/v1/datasheets';
 
     function textOr(v,f=''){ if(v===null||v===undefined) return f; const s=String(v).trim(); return s||f; }
-    function yes(v){ if(typeof v==='boolean') return v; if(typeof v==='number') return v>0; const s=String(v||'').trim().toLowerCase(); return ['1','true','yes','y','ok','done','√','已完成','完成'].includes(s); }
     function greet(now=new Date()){ const h=now.getHours(); return h<6?'凌晨好':h<12?'上午好':h<18?'下午好':'晚上好'; }
     function formatUpdatedAt(v){ if(v===null||v===undefined||v==='') return '14:52'; const n=Number(v); if(Number.isFinite(n) && n>1e12) return new Date(n).toLocaleString('zh-CN',{hour12:false,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).replace(/\//g,'-'); const s=String(v).trim(); if(/^\d{10,13}$/.test(s)) return new Date(Number(s)).toLocaleString('zh-CN',{hour12:false,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).replace(/\//g,'-'); const m=s.match(/(\d{1,2}:\d{2})/); return m?m[1]:s; }
     function normalizeAvatar(v){ const fallback='https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEU7lBqHtU3Gg-tXOF9ndfGfStjZi8DhwAC7iAAAtox-VT_BHU3mnqhgzsE.png'; if(!v) return fallback; if(Array.isArray(v)&&v.length){ const i=v[0]||{}; return i.url||i.downloadUrl||i.previewUrl||fallback; } if(typeof v==='object'){ return v.url||v.downloadUrl||v.previewUrl||fallback; } if(typeof v==='string'){ return v; } return fallback; }
@@ -147,7 +146,6 @@
       let totalMs = 0;
       let currentTask = '';
       let currentStart = 0;
-      let currentRemark = '';
       const active = [];
       for(const [taskId, arr] of byTask.entries()){
         arr.sort((a,b)=>a.ts-b.ts);
@@ -164,8 +162,8 @@
           active.push({taskId, start: stack.ts, remark: textOr(stack.f.remark,'')});
         }
       }
-      if(active.length){ active.sort((a,b)=>b.start-a.start); currentTask = active[0].remark || active[0].taskId; currentStart = active[0].start; currentRemark = active[0].remark; }
-      return { shifts, completeCount, totalMs, currentTask, currentStart, currentRemark, hasActive: active.length>0 };
+      if(active.length){ active.sort((a,b)=>b.start-a.start); currentTask = active[0].remark || active[0].taskId; currentStart = active[0].start; }
+      return { shifts, completeCount, totalMs, currentTask, currentStart, hasActive: active.length>0 };
     }
     function renderChecks(s){ return `<span>上午 ${s.morning?'√':'×'}</span><span>下午 ${s.afternoon?'√':'×'}</span><span>晚上 ${s.evening?'√':'×'}</span>`; }
     function setAvatar(url){ const wrap=document.getElementById('avatarWrap'); if(!url){ wrap.innerHTML='<div class="avatar-fallback" aria-hidden="true">○</div>'; return; } wrap.innerHTML=`<img src="${url}" alt="头像" loading="eager" decoding="async" onerror="this.parentNode.innerHTML='&lt;div class=\\'avatar-fallback\\' aria-hidden=\\'true\\'&gt;○&lt;/div&gt;'">`; }
@@ -182,6 +180,8 @@
       document.getElementById('dataStatus').textContent = '同步正常';
       document.getElementById('dataStatus').className = 'status ok';
       setAvatar(data.avatar);
+      document.body.style.height = '100vh';
+      document.documentElement.style.height = '100vh';
     }
     async function fetchRecords(datasheetId,maxRecords=1000){
       if(!VIKA_TOKEN||!datasheetId) return [];
@@ -199,13 +199,13 @@
     }
     async function get_dashboard_data(){
       try{
-        if(!VIKA_TOKEN||!DATASHEET_ID){ return {currentTask:'无任务，--:--',currentDuration:'--:--',poem:'枕上诗书闲处好',weather:'北京 25°C',shifts:{morning:false,afternoon:false,evening:false},taskCount:'今日（）任务',totalFocus:'累计（）小时',updatedAt:'14:52',avatar:normalizeAvatar('')}; }
+        if(!VIKA_TOKEN||!DATASHEET_ID){ return {currentTask:'无任务',currentDuration:'--:--',poem:'枕上诗书闲处好',weather:'北京 25°C',shifts:{morning:false,afternoon:false,evening:false},taskCount:'今日（）任务',totalFocus:'累计（）小时',updatedAt:'14:52',avatar:normalizeAvatar('')}; }
         const [mainRecords,summaryRecords,poem,weather] = await Promise.all([fetchRecords(DATASHEET_ID,1000), SUMMARY_DATASHEET_ID?fetchRecords(SUMMARY_DATASHEET_ID,1000).catch(()=>[]):Promise.resolve([]), fetchJinrishici(), fetchWeather()]);
         const main = latestToday(mainRecords);
         const parsed = parseClockRecords(main);
         const mainFields = main[0]?.fields || {};
         const summaryFields = summaryRecords[0]?.fields || {};
-        const nowTask = parsed.hasActive ? (parsed.currentTask || '正在计时') : '无任务，--:--';
+        const nowTask = parsed.hasActive ? (parsed.currentTask || '正在计时') : '无任务';
         const duration = parsed.hasActive ? fmtDuration(Date.now() - parsed.currentStart) : '--:--';
         const taskCount = parsed.completeCount ? `今日${parsed.completeCount}任务` : '今日（）任务';
         const totalFocus = parsed.totalMs ? `累计${fmtDuration(parsed.totalMs)}` : '累计（）小时';
@@ -223,7 +223,7 @@
           updatedAt
         };
       }catch(error){
-        return {userName:'大童',avatar:normalizeAvatar(''),weather:'北京 25°C',poem:'枕上诗书闲处好',currentTask:'无任务，--:--',currentDuration:'--:--',shifts:{morning:false,afternoon:false,evening:false},taskCount:'今日（）任务',totalFocus:'累计（）小时',updatedAt:'14:52'};
+        return {userName:'大童',avatar:normalizeAvatar(''),weather:'北京 25°C',poem:'枕上诗书闲处好',currentTask:'无任务',currentDuration:'--:--',shifts:{morning:false,afternoon:false,evening:false},taskCount:'今日（）任务',totalFocus:'累计（）小时',updatedAt:'14:52'};
       }
     }
     async function refreshDashboard(){ renderDashboard(await get_dashboard_data()); }
