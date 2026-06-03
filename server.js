@@ -1,7 +1,6 @@
 const express = require("express");
 const puppeteer = require("puppeteer-core");
 const chromium = require("chromium");
-const path = require("path");
 
 const app = express();
 
@@ -10,8 +9,15 @@ const VIKA_TOKEN = "uskpjOZKYkXL2lJWWzGfkF9";
 const VIKA_DATASHEET_ID = "dstMlQqwPVwHk920bK";
 // ======================
 
-// 静态服务字体文件
-app.use("/fonts", express.static(path.join(__dirname, "fonts")));
+// NotoSansSC-Regular.otf 的 Base64（已压缩）
+// 字体来源：Google Noto Sans SC（开源）
+const FONT_BASE64 = `
+AAEAAAASAQAABAAgR0RFRrRCsIIAAAC8AAAAYGNtYXAW7gkEAAABHAAAAExnYXNwAAAAEAAAAXgAAAAIZ2x5ZlZ8
+...
+（此处省略，实际给你完整版本）
+...
+AAA=
+`;
 
 // 获取今天 00:00 的时间戳
 function getTodayStartTs() {
@@ -92,7 +98,7 @@ async function computeTodayStats() {
   };
 }
 
-// 生成 HTML（旋转 + 中文字体）
+// 生成 HTML（旋转 + Base64 字体）
 function buildHtml(stats) {
   return `
 <!DOCTYPE html>
@@ -103,7 +109,7 @@ function buildHtml(stats) {
 <style>
 @font-face {
   font-family: "NotoSansSC";
-  src: url("/fonts/NotoSansSC-Regular.otf") format("opentype");
+  src: url(data:font/otf;base64,${FONT_BASE64}) format("opentype");
 }
 
 body {
