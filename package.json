@@ -1,13 +1,14 @@
 {
-  "name": "kindle-dashboard",
+  "name": "kindledash",
   "version": "1.0.0",
+  "description": "Kindle Dashboard Service",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "puppeteer-core": "^22.0.0"
+    "puppeteer-core": "^22.0.0",
     "chromium": "^3.0.2"
   }
 }
