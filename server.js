@@ -1,6 +1,7 @@
 const express = require("express");
 const puppeteer = require("puppeteer-core");
 const chromium = require("chromium");
+const path = require("path");
 
 const app = express();
 
@@ -8,6 +9,9 @@ const app = express();
 const VIKA_TOKEN = "uskpjOZKYkXL2lJWWzGfkF9";
 const VIKA_DATASHEET_ID = "dstMlQqwPVwHk920bK";
 // ======================
+
+// 静态服务字体文件
+app.use("/fonts", express.static(path.join(__dirname, "fonts")));
 
 // 获取今天 00:00 的时间戳
 function getTodayStartTs() {
@@ -31,10 +35,6 @@ async function fetchVikaEvents() {
   const res = await fetch(url, {
     headers: { Authorization: `Bearer ${VIKA_TOKEN}` }
   });
-
-  if (!res.ok) {
-    throw new Error(`Vika API error: ${res.status} ${res.statusText}`);
-  }
 
   const json = await res.json();
   const records = json.data.records || [];
@@ -92,35 +92,56 @@ async function computeTodayStats() {
   };
 }
 
-// 生成 HTML
+// 生成 HTML（旋转 + 中文字体）
 function buildHtml(stats) {
   return `
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1448, height=1072">
-<title>Kindle Dashboard</title>
+
 <style>
-  body {
-    margin: 0;
-    padding: 40px;
-    width: 1448px;
-    height: 1072px;
-    font-family: "Noto Sans SC", sans-serif;
-    background: #fff;
-    color: #000;
-    -webkit-filter: grayscale(100%);
-    filter: grayscale(100%);
-  }
-  .row { display: flex; justify-content: space-between; }
-  .col { display: flex; flex-direction: column; }
-  .center { text-align: center; margin-top: 80px; }
-  .timer { font-size: 120px; font-weight: bold; }
-  .bottom { margin-top: 60px; text-align: center; font-size: 26px; }
+@font-face {
+  font-family: "NotoSansSC";
+  src: url("/fonts/NotoSansSC-Regular.otf") format("opentype");
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 1072px;
+  height: 1448px;
+  font-family: "NotoSansSC", sans-serif;
+  background: #fff;
+  color: #000;
+  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%);
+
+  /* 旋转 90 度，让 Kindle 竖屏显示横屏内容 */
+  transform: rotate(90deg);
+  transform-origin: left top;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.container {
+  padding: 40px;
+  width: 1448px;
+  height: 1072px;
+}
+
+.row { display: flex; justify-content: space-between; }
+.col { display: flex; flex-direction: column; }
+.center { text-align: center; margin-top: 80px; }
+.timer { font-size: 120px; font-weight: bold; }
+.bottom { margin-top: 60px; text-align: center; font-size: 26px; }
 </style>
+
 </head>
 <body>
+<div class="container">
+
   <div class="row">
     <div class="col">
       <div style="font-size:32px;margin-bottom:10px;">今日概览</div>
@@ -140,6 +161,8 @@ function buildHtml(stats) {
     <div>更新时间：${stats.updatedAt}</div>
     <div style="margin-top:10px;">Victory Belongs To The Most Persevering.</div>
   </div>
+
+</div>
 </body>
 </html>
 `;
@@ -152,7 +175,6 @@ app.get("/", async (req, res) => {
     res.set("Content-Type", "text/html; charset=utf-8");
     res.send(buildHtml(stats));
   } catch (err) {
-    console.error("Error generating HTML:", err);
     res.status(500).send("Error generating HTML");
   }
 });
@@ -179,7 +201,7 @@ app.get("/dashboard.png", async (req, res) => {
     });
 
     const page = await browser.newPage();
-    await page.setViewport({ width: 1448, height: 1072, deviceScaleFactor: 1 });
+    await page.setViewport({ width: 1072, height: 1448, deviceScaleFactor: 1 });
     await page.setContent(html, { waitUntil: "networkidle0" });
 
     const buffer = await page.screenshot({ type: "png" });
@@ -187,7 +209,6 @@ app.get("/dashboard.png", async (req, res) => {
     res.set("Content-Type", "image/png");
     res.send(buffer);
   } catch (err) {
-    console.error("Error generating dashboard PNG:", err);
     res.status(500).send("Error generating dashboard PNG");
   } finally {
     if (browser) await browser.close();
