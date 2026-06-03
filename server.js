@@ -3,8 +3,8 @@ const puppeteer = require("puppeteer");
 
 const app = express();
 
-// 你的 HTML 页面（CodeBuddy）
-const DASHBOARD_URL = "https://951bacc07d774a75ba89bc9c32524ba6.app.codebuddy.work/";
+// 你的 HTML 页面地址（注意必须是字符串）
+const DASHBOARD_URL = "https://kindledash.onrender.com/";
 
 app.get("/dashboard.png", async (req, res) => {
   let browser;
@@ -30,7 +30,7 @@ app.get("/dashboard.png", async (req, res) => {
     });
 
     // 访问你的 HTML 页面
-    await page.goto(https://kindledash.onrender.com/, {
+    await page.goto(DASHBOARD_URL, {
       waitUntil: "networkidle0",
       timeout: 60000
     });
